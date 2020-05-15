@@ -1,4 +1,4 @@
 {
     "Keys": ["windowsmediafoundation"],
-    "Services": ["org.qt-project.qt.audiodecode"]
+    "Services": ["org.qt-project.qt.audiodecode", "org.qt-project.qt.camera"]
 }

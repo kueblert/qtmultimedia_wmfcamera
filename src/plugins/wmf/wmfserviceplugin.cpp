@@ -46,6 +46,8 @@
 #include "mfplayerservice.h"
 #endif
 #include "mfdecoderservice.h"
+#include "wmfcameraservice.h"
+#include "WMFVideoDeviceControl.h"
 
 #include <mfapi.h>
 
@@ -84,6 +86,10 @@ QMediaService* WMFServicePlugin::create(QString const& key)
         addRefCount();
         return new MFAudioDecoderService;
     }
+    if (key == QLatin1String(Q_MEDIASERVICE_CAMERA)) {
+        addRefCount();
+        return new WMFCameraService;
+    }
     //qDebug() << "unsupported key:" << key;
     return 0;
 }
@@ -107,18 +113,44 @@ QMediaServiceProviderHint::Features WMFServicePlugin::supportedFeatures(
         return QMediaServiceProviderHint::Features();
 }
 
-QByteArray WMFServicePlugin::defaultDevice(const QByteArray &) const
+QByteArray WMFServicePlugin::defaultDevice(const QByteArray &service) const
 {
+    if (service == Q_MEDIASERVICE_CAMERA) {
+        addRefCount();
+        const QList<WMFVideoDeviceInfo> &devs = WMFVideoDeviceControl::availableDevices();
+        releaseRefCount();
+        if (!devs.isEmpty())
+            return devs.first().first;
+    }
     return QByteArray();
 }
 
-QList<QByteArray> WMFServicePlugin::devices(const QByteArray &) const
+QList<QByteArray> WMFServicePlugin::devices(const QByteArray &service) const
 {
-    return QList<QByteArray>();
+    QList<QByteArray> result;
+
+    if (service == Q_MEDIASERVICE_CAMERA) {
+        addRefCount();
+        const QList<WMFVideoDeviceInfo> &devs = WMFVideoDeviceControl::availableDevices();
+        releaseRefCount();
+        for (const WMFVideoDeviceInfo &info : devs)
+            result.append(info.first);
+    }
+
+    return result;
 }
 
-QString WMFServicePlugin::deviceDescription(const QByteArray &, const QByteArray &)
+QString WMFServicePlugin::deviceDescription(const QByteArray &service, const QByteArray &device)
 {
+    if (service == Q_MEDIASERVICE_CAMERA) {
+        addRefCount();
+        const QList<WMFVideoDeviceInfo> &devs = WMFVideoDeviceControl::availableDevices();
+        releaseRefCount();
+        for (const WMFVideoDeviceInfo &info : devs) {
+            if (info.first == device)
+                return info.second;
+        }
+    }
     return QString();
 }
 

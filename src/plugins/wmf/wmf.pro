@@ -1,6 +1,8 @@
 TARGET = wmfengine
 QT += multimedia-private network
 
+CONFIG += c++11
+
 win32:!qtHaveModule(opengl) {
     LIBS_PRIVATE += -lgdi32 -luser32
 }
@@ -19,6 +21,7 @@ SOURCES += \
 
 qtConfig(wmf-player): include (player/player.pri)
 include (decoder/decoder.pri)
+include (camera/camera.pri)
 
 OTHER_FILES += \
     wmf.json \
@@ -27,3 +30,5 @@ OTHER_FILES += \
 PLUGIN_TYPE = mediaservice
 PLUGIN_CLASS_NAME = WMFServicePlugin
 load(qt_plugin)
+
+DESTDIR = $$[QT_INSTALL_PLUGINS]/mediaservice
