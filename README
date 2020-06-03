@@ -1,0 +1,9 @@
+== WMF Camera Plugin ==
+Enables the Windows Media Foundation backend to receive video frames from cameras.
+As of now, supported formats are still hardcoded and limited to MJPG and NV12, but modifying for your needs should be fairly simple.
+
+This compiles directly to a Qt multimedia plugin that can replace the previous wmf plugin to enable the additional functionailty.
+
+There is no guarantee of function, as I use this only for my own purposes with a very specific set of cameras.
+
+Thanks to the ESCAPI project for providing the capturing class.
