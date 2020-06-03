@@ -41,7 +41,9 @@
 #define WMFSERVICEPLUGIN_H
 
 #include <QtMultimedia/private/qtmultimediaglobal_p.h>
+#include <QThread>
 #include "qmediaserviceproviderplugin.h"
+#include "WMFCameraBackend.h"
 
 QT_USE_NAMESPACE
 
@@ -69,6 +71,12 @@ public:
     QByteArray defaultDevice(const QByteArray &service) const;
     QList<QByteArray> devices(const QByteArray &service) const;
     QString deviceDescription(const QByteArray &service, const QByteArray &device);
+
+private:
+    static WMFCameraBackend m_backend;
+    static QThread m_backendThread;
+
+    WMFCameraBackend* backend() const;
 };
 
 #endif // WMFSERVICEPLUGIN_H

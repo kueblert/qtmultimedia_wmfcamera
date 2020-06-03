@@ -1,22 +1,17 @@
 #include "WMFCameraControl.h"
-#include "wmfcamerasession.h"
-#include "wmfcameraservice.h"
+#include "WMFCameraSession.h"
 
-QT_BEGIN_NAMESPACE
-
-WMFCameraControl::WMFCameraControl(QObject* parent)
-    : QCameraControl(parent)
-    , m_session(qobject_cast<WMFCameraSession*>(parent))
-    , m_service(nullptr)
+WMFCameraControl::WMFCameraControl(WMFCameraSession* session)
+    : QCameraControl(nullptr)
     , m_state(QCamera::UnloadedState)
-    , m_captureMode(QCamera::CaptureStillImage)
+    , m_session(session)
 {
 
 }
 
-
 void WMFCameraControl::setState(QCamera::State state)
 {
+    qDebug() << "State change request from " << m_state << " to " << state;
     if (m_state == state)
         return;
 
@@ -27,10 +22,13 @@ void WMFCameraControl::setState(QCamera::State state)
         break;
 
     case QCamera::LoadedState:
-        if (m_state == QCamera::UnloadedState && !(succeeded = m_session->load()))
-            return;
-        if (m_state == QCamera::ActiveState)
+        if (m_state == QCamera::UnloadedState){
+            succeeded = m_session->load();
+            qDebug() << "Loading was " << succeeded;
+        }
+        if (m_state == QCamera::ActiveState){
             succeeded = m_session->stopPreview();
+        }
         break;
 
     case QCamera::ActiveState:
@@ -40,8 +38,10 @@ void WMFCameraControl::setState(QCamera::State state)
             m_state = QCamera::LoadedState;
         }
 
-        if (state == QCamera::ActiveState)
+        if (state == QCamera::ActiveState){
             succeeded = m_session->startPreview();
+            qDebug() << "startPreview " << succeeded;
+        }
         else
             succeeded = m_session->stopPreview();
 
@@ -80,5 +80,3 @@ QCamera::Status WMFCameraControl::status() const
 {
     return m_session->status();
 }
-
-QT_END_NAMESPACE

@@ -3,6 +3,7 @@
 
 #include <windows.h>
 #include <mfapi.h>
+#include <QMutex>
 
 class DeviceList
 {
@@ -10,10 +11,7 @@ class DeviceList
     UINT32      m_cDevices;
 
 public:
-    DeviceList() : m_ppDevices(NULL), m_cDevices(0)
-    {
-
-    }
+    DeviceList();
     ~DeviceList()
     {
         Clear();
@@ -21,10 +19,15 @@ public:
 
     UINT32  Count() const { return m_cDevices; }
 
+    // Clear and EnumerateDevices needs to be threadsafe and callable from different threads simultaneously
     void    Clear();
     HRESULT EnumerateDevices();
+
     HRESULT GetDevice(UINT32 index, IMFActivate **ppActivate);
     HRESULT GetDeviceName(UINT32 index, WCHAR **ppszName);
+
+private:
+    QMutex m_enumerationMutex;
 };
 
 #endif // DEVICELIST_H

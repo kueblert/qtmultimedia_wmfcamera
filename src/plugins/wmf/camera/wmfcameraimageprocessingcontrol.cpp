@@ -1,78 +1,67 @@
-/****************************************************************************
-**
-** Copyright (C) 2016 Denis Shienkov <denis.shienkov@gmail.com>
-** Contact: https://www.qt.io/licensing/
-**
-** This file is part of the Qt Toolkit.
-**
-** $QT_BEGIN_LICENSE:LGPL$
-** Commercial License Usage
-** Licensees holding valid commercial Qt licenses may use this file in
-** accordance with the commercial license agreement provided with the
-** Software or, alternatively, in accordance with the terms contained in
-** a written agreement between you and The Qt Company. For licensing terms
-** and conditions see https://www.qt.io/terms-conditions. For further
-** information use the contact form at https://www.qt.io/contact-us.
-**
-** GNU Lesser General Public License Usage
-** Alternatively, this file may be used under the terms of the GNU Lesser
-** General Public License version 3 as published by the Free Software
-** Foundation and appearing in the file LICENSE.LGPL3 included in the
-** packaging of this file. Please review the following information to
-** ensure the GNU Lesser General Public License version 3 requirements
-** will be met: https://www.gnu.org/licenses/lgpl-3.0.html.
-**
-** GNU General Public License Usage
-** Alternatively, this file may be used under the terms of the GNU
-** General Public License version 2.0 or (at your option) the GNU General
-** Public license version 3 or any later version approved by the KDE Free
-** Qt Foundation. The licenses are as published by the Free Software
-** Foundation and appearing in the file LICENSE.GPL2 and LICENSE.GPL3
-** included in the packaging of this file. Please review the following
-** information to ensure the GNU General Public License requirements will
-** be met: https://www.gnu.org/licenses/gpl-2.0.html and
-** https://www.gnu.org/licenses/gpl-3.0.html.
-**
-** $QT_END_LICENSE$
-**
-****************************************************************************/
-
-#include "dscameraimageprocessingcontrol.h"
-#include "dscamerasession.h"
+#include "WMFCameraImageProcessingControl.h"
+#include "WMFCameraSession.h"
 
 QT_BEGIN_NAMESPACE
 
-DSCameraImageProcessingControl::DSCameraImageProcessingControl(DSCameraSession *session)
+WMFCameraImageProcessingControl::WMFCameraImageProcessingControl(WMFCameraSession* session)
     : QCameraImageProcessingControl(session)
     , m_session(session)
 {
 }
 
-DSCameraImageProcessingControl::~DSCameraImageProcessingControl() = default;
-
-bool DSCameraImageProcessingControl::isParameterSupported(
-        QCameraImageProcessingControl::ProcessingParameter parameter) const
+bool WMFCameraImageProcessingControl::isParameterSupported(
+    QCameraImageProcessingControl::ProcessingParameter parameter) const
 {
-    return m_session->isImageProcessingParameterSupported(parameter);
+    return true;
 }
 
-bool DSCameraImageProcessingControl::isParameterValueSupported(
-        QCameraImageProcessingControl::ProcessingParameter parameter,
-        const QVariant &value) const
+bool WMFCameraImageProcessingControl::isParameterValueSupported(
+    QCameraImageProcessingControl::ProcessingParameter parameter,
+    const QVariant& value) const
 {
-    return m_session->isImageProcessingParameterValueSupported(parameter, value);
+    return false;
 }
 
-QVariant DSCameraImageProcessingControl::parameter(
-        QCameraImageProcessingControl::ProcessingParameter parameter) const
-{
-    return m_session->imageProcessingParameter(parameter);
+CAPTURE_PROPETIES WMFCameraImageProcessingControl::ProcessingParameter2WMF(ProcessingParameter p) const{
+    switch(p){
+        case ProcessingParameter::Brightness:
+        return CAPTURE_BRIGHTNESS;
+    case ProcessingParameter::Contrast:
+    return CAPTURE_CONTRAST;
+    case ProcessingParameter::ColorTemperature:
+    return CAPTURE_HUE;
+    case ProcessingParameter::Saturation:
+    return CAPTURE_SATURATION;
+    case ProcessingParameter::Sharpening:
+    return CAPTURE_SHARPNESS;
+    case ProcessingParameter::WhiteBalancePreset:
+    return CAPTURE_WHITEBALANCE;    //TODO is that right?
+    case ProcessingParameter::Denoising:
+    return CAPTURE_BACKLIGHTCOMPENSATION; //TODO is that right?
+    default:
+        qWarning() << "Unknown Parameter";
+        return CAPTURE_PROP_MAX;
+    }
 }
 
-void DSCameraImageProcessingControl::setParameter(QCameraImageProcessingControl::ProcessingParameter parameter,
-                                                  const QVariant &value)
+QVariant WMFCameraImageProcessingControl::parameter(
+    QCameraImageProcessingControl::ProcessingParameter parameter) const
 {
-    m_session->setImageProcessingParameter(parameter, value);
+    float value;
+    int autoValue;
+    int devId = m_session->selectedDevice();
+    m_session->m_backend->getRunningDevices()[devId]->getProperty(ProcessingParameter2WMF(parameter), value, autoValue);
+
+    return QVariant(value);
+}
+
+void WMFCameraImageProcessingControl::setParameter(QCameraImageProcessingControl::ProcessingParameter parameter,
+    const QVariant& value)
+{
+
+    int devId = m_session->selectedDevice();
+    m_session->m_backend->getRunningDevices()[devId]->setProperty(ProcessingParameter2WMF(parameter), value.toFloat(), 0);
+
 }
 
 QT_END_NAMESPACE

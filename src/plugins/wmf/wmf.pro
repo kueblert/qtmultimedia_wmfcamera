@@ -31,4 +31,11 @@ PLUGIN_TYPE = mediaservice
 PLUGIN_CLASS_NAME = WMFServicePlugin
 load(qt_plugin)
 
-DESTDIR = $$[QT_INSTALL_PLUGINS]/mediaservice
+#DESTDIR = $$[QT_INSTALL_PLUGINS]/mediaservice
+
+CONFIG(release) {
+DESTDIR = C:/Users/kueblert/Documents/Look/build/GUI/release/mediaservice
+}
+CONFIG(debug) {
+DESTDIR = C:/Users/kueblert/Documents/Look/build/GUI/debug/mediaservice
+}

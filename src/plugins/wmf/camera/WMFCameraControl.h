@@ -1,38 +1,32 @@
-#ifndef WMFCAMERACONTROL_H
-#define WMFCAMERACONTROL_H
+#ifndef ESCAPICAMERACONTROL_H
+#define ESCAPICAMERACONTROL_H
 
-#include <QtCore/qobject.h>
-#include <QtMultimedia/QCameraControl>
-
-QT_BEGIN_NAMESPACE
+#include <QCameraControl>
 
 class WMFCameraSession;
-class WMFCameraService;
-
-class WMFCameraControl : public QCameraControl
+class WMFCameraControl: public QCameraControl
 {
+    Q_OBJECT
 public:
-    WMFCameraControl(QObject* parent = 0);
-    ~WMFCameraControl() = default;
+    WMFCameraControl(WMFCameraSession* session);
 
-    QCamera::State state() const { return m_state; }
+    // QCameraControl
+    QCamera::State state() const override { return m_state; }
 
-    QCamera::CaptureModes captureMode() const { return m_captureMode; }
-    void setCaptureMode(QCamera::CaptureModes mode);
+    QCamera::CaptureModes captureMode() const override { return m_captureMode; }
+    void setCaptureMode(QCamera::CaptureModes mode) override;
 
-    void setState(QCamera::State state);
+    void setState(QCamera::State state) override;
 
-    QCamera::Status status() const;
-    bool isCaptureModeSupported(QCamera::CaptureModes mode) const;
-    bool canChangeProperty(PropertyChangeType /* changeType */, QCamera::Status /* status */) const { return false; }
+    QCamera::Status status() const override;
+    bool isCaptureModeSupported(QCamera::CaptureModes mode) const override;
+    bool canChangeProperty(PropertyChangeType /* changeType */, QCamera::Status /* status */) const override { return false; }
 
 private:
-    WMFCameraSession* m_session;
-    WMFCameraService* m_service;
     QCamera::State m_state;
     QCamera::CaptureModes m_captureMode;
+
+    WMFCameraSession* m_session;
 };
 
-QT_END_NAMESPACE
-
-#endif // WMFCAMERACONTROL_H
+#endif // ESCAPICAMERACONTROL_H

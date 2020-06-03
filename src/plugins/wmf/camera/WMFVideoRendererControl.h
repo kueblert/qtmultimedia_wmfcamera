@@ -1,24 +1,22 @@
-#ifndef WMFVIDEORENDERERCONTROL_H
-#define WMFVIDEORENDERERCONTROL_H
+#ifndef ESCAPIVIDEORENDERERCONTROL_H
+#define ESCAPIVIDEORENDERERCONTROL_H
 
-#include <qvideorenderercontrol.h>
-#include "wmfcamerasession.h"
+#include <QVideoRendererControl>
 
-QT_BEGIN_NAMESPACE
+class WMFCameraSession;
 
 class WMFVideoRendererControl : public QVideoRendererControl
 {
+    Q_OBJECT
 public:
-    WMFVideoRendererControl(WMFCameraSession* session, QObject* parent = 0);
-    ~WMFVideoRendererControl() = default;
+    WMFVideoRendererControl(WMFCameraSession* session, QObject* parent = nullptr);
 
-    QAbstractVideoSurface* surface() const;
-    void setSurface(QAbstractVideoSurface* surface);
+    // QVideoRendererControl
+    virtual void setSurface(QAbstractVideoSurface *surface) override;
+    virtual QAbstractVideoSurface *	surface() const override;
+
 private:
-    QAbstractVideoSurface* m_surface;
     WMFCameraSession* m_session;
 };
 
-QT_END_NAMESPACE
-
-#endif // WMFVIDEORENDERERCONTROL_H
+#endif // ESCAPIVIDEORENDERERCONTROL_H

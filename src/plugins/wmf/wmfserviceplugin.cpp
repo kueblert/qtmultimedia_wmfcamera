@@ -46,10 +46,9 @@
 #include "mfplayerservice.h"
 #endif
 #include "mfdecoderservice.h"
-#include "wmfcameraservice.h"
-#include "WMFVideoDeviceControl.h"
-
+#include "WMFCameraService.h"
 #include <mfapi.h>
+#include <QMetaObject>
 
 namespace
 {
@@ -58,7 +57,7 @@ void addRefCount()
 {
     g_refCount++;
     if (g_refCount == 1) {
-        CoInitialize(NULL);
+        CoInitializeEx(NULL, COINIT_APARTMENTTHREADED | COINIT_DISABLE_OLE1DDE);
         MFStartup(MF_VERSION);
     }
 }
@@ -74,6 +73,9 @@ void releaseRefCount()
 
 }
 
+WMFCameraBackend WMFServicePlugin::m_backend;
+QThread WMFServicePlugin::m_backendThread;
+
 QMediaService* WMFServicePlugin::create(QString const& key)
 {
 #if QT_CONFIG(wmf_player)
@@ -88,9 +90,9 @@ QMediaService* WMFServicePlugin::create(QString const& key)
     }
     if (key == QLatin1String(Q_MEDIASERVICE_CAMERA)) {
         addRefCount();
-        return new WMFCameraService;
+        return new WMFCameraService(backend());
     }
-    //qDebug() << "unsupported key:" << key;
+    qWarning() << "unsupported key:" << key;
     return 0;
 }
 
@@ -98,6 +100,16 @@ void WMFServicePlugin::release(QMediaService *service)
 {
     delete service;
     releaseRefCount();
+}
+
+WMFCameraBackend* WMFServicePlugin::backend() const{
+    if(!m_backendThread.isRunning()){
+        qInfo() << "Initializing WMF backend";
+        m_backend.moveToThread(&m_backendThread);
+        m_backendThread.start();
+        QMetaObject::invokeMethod(&m_backend, "init", Qt::QueuedConnection);
+    }
+    return &m_backend;
 }
 
 QMediaServiceProviderHint::Features WMFServicePlugin::supportedFeatures(
@@ -116,25 +128,23 @@ QMediaServiceProviderHint::Features WMFServicePlugin::supportedFeatures(
 QByteArray WMFServicePlugin::defaultDevice(const QByteArray &service) const
 {
     if (service == Q_MEDIASERVICE_CAMERA) {
-        addRefCount();
-        const QList<WMFVideoDeviceInfo> &devs = WMFVideoDeviceControl::availableDevices();
-        releaseRefCount();
+        const QList<QByteArray> devs = backend()->getDeviceNames();
         if (!devs.isEmpty())
-            return devs.first().first;
+            return devs.first();
     }
+
     return QByteArray();
 }
 
 QList<QByteArray> WMFServicePlugin::devices(const QByteArray &service) const
 {
     QList<QByteArray> result;
-
+    //qDebug() << "here";
     if (service == Q_MEDIASERVICE_CAMERA) {
-        addRefCount();
-        const QList<WMFVideoDeviceInfo> &devs = WMFVideoDeviceControl::availableDevices();
-        releaseRefCount();
-        for (const WMFVideoDeviceInfo &info : devs)
-            result.append(info.first);
+        const QList<QByteArray> devs = backend()->getDeviceNames();
+        for (auto info : devs){
+            result.append(info);
+        }
     }
 
     return result;
@@ -143,14 +153,13 @@ QList<QByteArray> WMFServicePlugin::devices(const QByteArray &service) const
 QString WMFServicePlugin::deviceDescription(const QByteArray &service, const QByteArray &device)
 {
     if (service == Q_MEDIASERVICE_CAMERA) {
-        addRefCount();
-        const QList<WMFVideoDeviceInfo> &devs = WMFVideoDeviceControl::availableDevices();
-        releaseRefCount();
-        for (const WMFVideoDeviceInfo &info : devs) {
-            if (info.first == device)
-                return info.second;
-        }
+
+        const QList<QByteArray> devs = backend()->getDeviceNames();
+        for (auto info : devs)
+            if (info == device)
+                return info;
     }
+
     return QString();
 }
 
