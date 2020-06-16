@@ -19,7 +19,6 @@ void WMFVideoDeviceSelectorControl::setSelectedDevice(int index){ m_session->set
 
 QString	WMFVideoDeviceSelectorControl::deviceDescription(int index) const{
     return m_session->m_backend->getDeviceNames()[index];
-    //return deviceList->at(index).first;
 }
 
 int	WMFVideoDeviceSelectorControl::deviceCount() const {
@@ -28,7 +27,6 @@ int	WMFVideoDeviceSelectorControl::deviceCount() const {
 
 QString	WMFVideoDeviceSelectorControl::deviceName(int index) const{
     return m_session->m_backend->getDeviceNames()[index];
-    //return deviceList->at(index).first;
 }
 
 const QList<ESCAPIVideoDeviceInfo>& WMFVideoDeviceSelectorControl::availableDevices()
@@ -50,5 +48,6 @@ void WMFVideoDeviceSelectorControl::updateDevices()
         info.second = QString::fromWCharArray(szFriendlyName);
         info.first = info.second.toUtf8();
         deviceList->append(info);
+        delete[] szFriendlyName;
     }
 }

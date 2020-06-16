@@ -594,7 +594,7 @@ int CaptureClass::scanMediaTypes(unsigned int aWidth, unsigned int aHeight)
 				besterror = error;
 				bestfit = count;
 			}
-            qDebug() << "Viable option: " << width << "x" << height << (nativeGuid==MFVideoFormat_MJPG?"MJPG" : "NV12");
+            //qDebug() << "Viable option: " << width << "x" << height << (nativeGuid==MFVideoFormat_MJPG?"MJPG" : "NV12");
 			/*
 			char temp[1024];
 			sprintf(temp, "%d x %d, %x:%x:%x:%x %d %d\n", width, height, nativeGuid.Data1, nativeGuid.Data2, nativeGuid.Data3, nativeGuid.Data4, bestfit == count, besterror);

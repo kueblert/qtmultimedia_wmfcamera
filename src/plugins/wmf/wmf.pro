@@ -33,9 +33,7 @@ load(qt_plugin)
 
 #DESTDIR = $$[QT_INSTALL_PLUGINS]/mediaservice
 
-CONFIG(release) {
-DESTDIR = C:/Users/kueblert/Documents/Look/build/GUI/release/mediaservice
-}
-CONFIG(debug) {
-DESTDIR = C:/Users/kueblert/Documents/Look/build/GUI/debug/mediaservice
-}
+
+Release:BUILD_TYPE="release"
+Debug:BUILD_TYPE="debug"
+DESTDIR = ../../../../../../GUI/$$BUILD_TYPE/mediaservice

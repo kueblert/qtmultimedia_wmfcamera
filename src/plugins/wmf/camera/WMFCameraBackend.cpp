@@ -49,7 +49,7 @@ void WMFCameraBackend::init(){
 }
 
 void WMFCameraBackend::setResolution(int devId, int width, int height, const QVideoFrame::PixelFormat& format){
-    qWarning() << format;
+    //qWarning() << format;
     SimpleCapParams p;
     p.mWidth = width; p.mHeight = height;
     switch(format){
@@ -180,11 +180,12 @@ QList<QByteArray> WMFCameraBackend::getDeviceNames(){
 
     dl.EnumerateDevices();
     QList<QByteArray> avail_devices;
-    WCHAR *szFriendlyName = NULL;
+    WCHAR *szFriendlyName = NULL; //TODO free
     for (UINT32 iDevice = 0; iDevice < dl.Count(); iDevice++)
     {
         dl.GetDeviceName(iDevice, &szFriendlyName);
         avail_devices.append(QString::fromWCharArray(szFriendlyName).toUtf8());
+        delete[] szFriendlyName;
     }
     return avail_devices;
 }

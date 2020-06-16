@@ -4,6 +4,7 @@
 #include <windows.h>
 #include <mfapi.h>
 #include <QMutex>
+#include <QStringList>
 
 class DeviceList
 {
@@ -28,6 +29,10 @@ public:
 
 private:
     QMutex m_enumerationMutex;
+
+    // We are caching this to be able to handle cameras with the same name
+    void cacheDeviceNames();
+    QStringList deviceNames;
 };
 
 #endif // DEVICELIST_H

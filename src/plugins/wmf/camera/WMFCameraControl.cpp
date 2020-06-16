@@ -11,7 +11,7 @@ WMFCameraControl::WMFCameraControl(WMFCameraSession* session)
 
 void WMFCameraControl::setState(QCamera::State state)
 {
-    qDebug() << "State change request from " << m_state << " to " << state;
+    //qDebug() << "State change request from " << m_state << " to " << state;
     if (m_state == state)
         return;
 
@@ -24,7 +24,7 @@ void WMFCameraControl::setState(QCamera::State state)
     case QCamera::LoadedState:
         if (m_state == QCamera::UnloadedState){
             succeeded = m_session->load();
-            qDebug() << "Loading was " << succeeded;
+            //qDebug() << "Loading was " << succeeded;
         }
         if (m_state == QCamera::ActiveState){
             succeeded = m_session->stopPreview();
@@ -40,7 +40,7 @@ void WMFCameraControl::setState(QCamera::State state)
 
         if (state == QCamera::ActiveState){
             succeeded = m_session->startPreview();
-            qDebug() << "startPreview " << succeeded;
+            //qDebug() << "startPreview " << succeeded;
         }
         else
             succeeded = m_session->stopPreview();

@@ -104,7 +104,7 @@ void WMFServicePlugin::release(QMediaService *service)
 
 WMFCameraBackend* WMFServicePlugin::backend() const{
     if(!m_backendThread.isRunning()){
-        qInfo() << "Initializing WMF backend";
+        //qInfo() << "Initializing WMF backend";
         m_backend.moveToThread(&m_backendThread);
         m_backendThread.start();
         QMetaObject::invokeMethod(&m_backend, "init", Qt::QueuedConnection);

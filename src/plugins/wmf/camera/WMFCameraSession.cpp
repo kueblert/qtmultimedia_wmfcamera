@@ -74,7 +74,7 @@ void WMFCameraSession::presentNewFrame(int device, const QVideoFrame& frame)
 }
 
 bool WMFCameraSession::startPreview(){
-    qDebug() << m_settings.pixelFormat() << "@" << m_settings.resolution().width() << "x" << m_settings.resolution().height();
+    //qDebug() << m_settings.pixelFormat() << "@" << m_settings.resolution().width() << "x" << m_settings.resolution().height();
     assert(m_settings.pixelFormat() != QVideoFrame::Format_Invalid);
     QMetaObject::invokeMethod(m_backend, "setResolution", Qt::QueuedConnection, Q_ARG(int, m_selectedDevice), Q_ARG(int, m_settings.resolution().width()), Q_ARG(int,  m_settings.resolution().height()), Q_ARG(QVideoFrame::PixelFormat, m_settings.pixelFormat()));
 

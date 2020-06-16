@@ -72,7 +72,7 @@ QMediaControl *	WMFCameraService::requestControl(const char *interfaceName)
     if (qstrcmp(interfaceName, QCameraExposureControl_iid) == 0)
         return m_cameraExposureControl;
 
-    qDebug() << "requestControl unavailable: " << interfaceName;
+    //qDebug() << "requestControl unavailable: " << interfaceName;
     return nullptr;
 }
 
